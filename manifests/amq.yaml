@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: banka-1-message-broker
+  name: banka-1-message-broker
+  namespace: banka-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: banka-1-message-broker
+  template:
+    metadata:
+      labels:
+        app: banka-1-message-broker
+    spec:
+      containers:
+        - image: apache/activemq-classic:latest
+          name: activemq-classic
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: banka-1-message-broker
+  name: banka-1-message-broker
+  namespace: banka-1
+spec:
+  ports:
+    - port: 61616
+      name: activemq
+      protocol: TCP
+      targetPort: 61616
+    - port: 61613
+      name: activemq-stomp
+      protocol: TCP
+      targetPort: 61613
+  selector:
+    app: banka-1-message-broker
+  type: ClusterIP

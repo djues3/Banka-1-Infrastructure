@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: support-service
+  name: support-service
+  namespace: banka-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: support-service
+  template:
+    metadata:
+      labels:
+        app: support-service
+    spec:
+      containers:
+        - image: harbor.k8s.elab.rs/banka-1/support-service:latest
+          imagePullPolicy: Always
+          name: support-service
+          env:
+            - name: GOOGLE_API
+              valueFrom:
+                secretKeyRef:
+                  key: api-key
+                  name: google-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: support-service
+  name: support-service
+  namespace: banka-1
+spec:
+  ports:
+    - port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app: support-service
+  type: ClusterIP
