@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: notification-service
+  name: notification-service
+  namespace: banka-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - image: harbor.k8s.elab.rs/banka-1/notification-service:latest
+          imagePullPolicy: Always
+          name: notification-service
+          env:
+            - name: THC_PORT
+              value: "8080"
+            - name: THC_PATH
+              value: "/actuator/health"
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://banka-1-primary.banka-1.svc:5432/notification-service-db?useUnicode=true&characterEncoding=UTF-8
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: org.postgresql.Driver
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: banka-1-pguser-notification-service-user
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: banka-1-pguser-notification-service-user
+            - name: SPRING_ACTIVEMQ_BROKER_URL
+              value: tcp://banka-1-message-broker:61616?jms.prefetchPolicy.all=1&jms.redeliveryPolicy.maximumRedeliveries=0
+            - name: FRONTEND_URL
+              value: https://banka-1.si.raf.edu.rs
+            - name: SPRING_SQL_INIT_MODE
+              value: always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: notification-service
+  name: notification-service
+  namespace: banka-1
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: notification-service
+  type: ClusterIP

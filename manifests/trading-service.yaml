@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: trading-service
+  name: trading-service
+  namespace: banka-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trading-service
+  template:
+    metadata:
+      labels:
+        app: trading-service
+    spec:
+      containers:
+        - image: harbor.k8s.elab.rs/banka-1/trading-service:latest
+          imagePullPolicy: Always
+          name: trading-service
+          env:
+            - name: POSTGRES_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: banka-1-pguser-trading-service-user
+            - name: MESSAGE_BROKER_HOST
+              value: banka-1-message-broker:61613
+            - name: MESSAGE_BROKER_NETWORK
+              value: "tcp"
+            - name: USER_SERVICE
+              value: http://user-service:8081
+            - name: BANKING_SERVICE
+              value: http://banking-service:8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: trading-service
+  name: trading-service
+  namespace: banka-1
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: trading-service
+  type: ClusterIP
