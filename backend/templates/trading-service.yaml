@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: trading-service
-  name: trading-service
-  namespace: banka-1
+    app: {{ .Release.Name}}-trading-service
+  name: {{ .Release.Name}}-trading-service
+  namespace: {{ .Release.Namespace}}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: trading-service
+      app: {{ .Release.Name}}-trading-service
   template:
     metadata:
       labels:
-        app: trading-service
+        app: {{ .Release.Name}}-trading-service
     spec:
       containers:
-        - image: harbor.k8s.elab.rs/banka-1/trading-service:latest
+        - image: harbor.k8s.elab.rs/banka-1/trading-service:{{ .Values.imageTag}}
           imagePullPolicy: Always
           name: trading-service
 #          livenessProbe:
@@ -38,28 +38,28 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: uri
-                  name: banka-1-pguser-trading-service-user
+                  name: {{ .Release.Name}}-pguser-trading-service-user
             - name: MESSAGE_BROKER_HOST
-              value: banka-1-message-broker:61613
+              value: {{ .Release.Name}}-message-broker:61613
             - name: MESSAGE_BROKER_NETWORK
               value: "tcp"
             - name: USER_SERVICE
-              value: http://user-service:8081
+              value: http://{{ .Release.Name}}-user-service:8081
             - name: BANKING_SERVICE
-              value: http://banking-service:8082
+              value: http://{{ .Release.Name}}-banking-service:8082
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: trading-service
-  name: trading-service
-  namespace: banka-1
+    app: {{ .Release.Name}}-trading-service
+  name: {{ .Release.Name}}-trading-service
+  namespace: {{ .Release.Namespace}}
 spec:
   ports:
     - port: 3000
       protocol: TCP
       targetPort: 3000
   selector:
-    app: trading-service
+    app: {{ .Release.Name}}-trading-service
   type: ClusterIP

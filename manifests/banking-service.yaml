@@ -19,6 +19,20 @@ spec:
         - image: harbor.k8s.elab.rs/banka-1/banking-service:latest
           imagePullPolicy: Always
           name: banking-service
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8082
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 10
           env:
             - name: THC_PORT
               value: "8082"

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Release.Name }}-message-broker
+  name: {{ .Release.Name }}-message-broker
+  namespace: {{ .Release.Namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-message-broker
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-message-broker
+    spec:
+      containers:
+        - image: apache/activemq-classic:latest
+          name: activemq-classic
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-message-broker
+  name: {{ .Release.Name }}-message-broker
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - port: 61616
+      name: activemq
+      protocol: TCP
+      targetPort: 61616
+    - port: 61613
+      name: activemq-stomp
+      protocol: TCP
+      targetPort: 61613
+  selector:
+    app: {{ .Release.Name}}-message-broker
+  type: ClusterIP

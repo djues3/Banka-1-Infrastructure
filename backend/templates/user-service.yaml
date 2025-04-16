@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: user-service
-  name: user-service
-  namespace: banka-1
+    app: {{ .Release.Name}}-user-service
+  name: {{ .Release.Name}}-user-service
+  namespace: {{ .Release.Namespace}}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-service
+      app: {{ .Release.Name}}-user-service
   template:
     metadata:
       labels:
-        app: user-service
+        app: {{ .Release.Name}}-user-service
     spec:
       containers:
-        - image: harbor.k8s.elab.rs/banka-1/user-service:latest
+        - image: harbor.k8s.elab.rs/banka-1/user-service:{{ .Values.imageTag}}
           imagePullPolicy: Always
           name: user-service
           livenessProbe:
@@ -39,23 +39,23 @@ spec:
             - name: THC_PATH
               value: "/actuator/health"
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://banka-1-primary.banka-1.svc:5432/user-service-db?useUnicode=true&characterEncoding=UTF-8
+              value: jdbc:postgresql://{{ .Release.Name}}-primary.{{ .Release.Namespace}}.svc:5432/user-service-db?useUnicode=true&characterEncoding=UTF-8
             - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
               value: org.postgresql.Driver
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
                   key: user
-                  name: banka-1-pguser-user-service-user
+                  name: {{ .Release.Name}}-pguser-user-service-user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: banka-1-pguser-user-service-user
+                  name: {{ .Release.Name}}-pguser-user-service-user
             - name: SPRING_ACTIVEMQ_BROKER_URL
-              value: tcp://banka-1-message-broker:61616?jms.prefetchPolicy.all=1&jms.redeliveryPolicy.maximumRedeliveries=0
+              value: tcp://{{ .Release.Name}}-message-broker:61616?jms.prefetchPolicy.all=1&jms.redeliveryPolicy.maximumRedeliveries=0
             - name: FRONTEND_URL
-              value: https://banka-1.si.raf.edu.rs
+              value: {{ .Values.appDomain}}
             - name: SPRING_SQL_INIT_MODE
               value: always
 
@@ -64,14 +64,14 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: user-service
-  name: user-service
-  namespace: banka-1
+    app: {{ .Release.Name}}-user-service
+  name: {{ .Release.Name}}-user-service
+  namespace: {{ .Release.Namespace}}
 spec:
   ports:
     - port: 8081
       protocol: TCP
       targetPort: 8081
   selector:
-    app: user-service
+    app: {{ .Release.Name}}-user-service
   type: ClusterIP
