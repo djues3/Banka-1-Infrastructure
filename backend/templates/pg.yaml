@@ -1,0 +1,72 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: {{ .Release.Name}}
+  namespace: {{ .Release.Namespace}}
+spec:
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi9-17.4-2513
+  postgresVersion: 17
+  instances:
+    - name: instance1
+      replicas: 3
+      dataVolumeClaimSpec:
+        accessModes:
+        - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 30Gi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/cluster: {{ .Release.Name}}
+                  postgres-operator.crunchydata.com/instance-set: instance1
+  backups:
+    pgbackrest:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi9-2.54.2-2513
+      repos:
+      - name: repo1
+        volume:
+          volumeClaimSpec:
+            accessModes:
+            - "ReadWriteOnce"
+            resources:
+              requests:
+                storage: 30Gi
+  proxy:
+    pgBouncer:
+      replicas: 2
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi9-1.24-2513
+      resources:
+        limits:
+          cpu: 200m
+          memory: 128Mi
+  users:
+    - name: user-service-user
+      password:
+        type: "AlphaNumeric"
+      databases:
+        - user-service-db
+      options: "SUPERUSER"
+    - name: banking-service-user
+      password:
+        type: "AlphaNumeric"
+      databases:
+        - banking-service-db
+      options: "SUPERUSER"
+    - name: trading-service-user
+      password:
+        type: "AlphaNumeric"
+      databases:
+        - trading-service-db
+      options: "SUPERUSER"
+    - name: notification-service-user
+      password:
+        type: "AlphaNumeric"
+      databases:
+        - notification-service-db
+      options: "SUPERUSER"
