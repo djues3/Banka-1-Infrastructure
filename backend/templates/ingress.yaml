@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name}}-ingress-api
+  namespace: {{ .Release.Namespace}}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.appDomain}}
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/api/user(/|$)(.*)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-user-service
+                port:
+                  number: 8081
+          - pathType: ImplementationSpecific
+            path: "/api/banking(/|$)(.*)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-banking-service
+                port:
+                  number: 8082
+          - pathType: ImplementationSpecific
+            path: "/api/trading(/|$)(.*)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-trading-service
+                port:
+                  number: 3000
+          - pathType: ImplementationSpecific
+            path: "/api/support(/|$)(.*)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-support-service
+                port:
+                  number: 8000
