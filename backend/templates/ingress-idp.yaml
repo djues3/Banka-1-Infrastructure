@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name}}-ingress-api-idp
+  namespace: {{ .Release.Namespace}}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.idpDomain}}
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/.well-known/.*"
+            backend:
+              service:
+                name: {{ .Release.Name}}-idp
+                port:
+                  number: 9000
+
+          - pathType: ImplementationSpecific
+            path: "/o/oauth2/.*"
+            backend:
+              service:
+                name: {{ .Release.Name}}-idp
+                port:
+                  number: 9000
+          - pathType: ImplementationSpecific
+            path: "/userinfo"
+            backend:
+              service:
+                name: {{ .Release.Name}}-idp
+                port:
+                  number: 9000
+          - pathType: ImplementationSpecific
+            path: "/o/connect/logout"
+            backend:
+              service:
+                name: {{ .Release.Name}}-idp
+                port:
+                  number: 9000
+          - pathType: ImplementationSpecific
+            path: "/api/.*"
+            backend:
+              service:
+                name: {{ .Release.Name}}-idp
+                port:
+                  number: 9000
