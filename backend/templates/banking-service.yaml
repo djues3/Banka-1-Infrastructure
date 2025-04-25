@@ -56,6 +56,8 @@ spec:
               value: tcp://{{ .Release.Name}}-message-broker:61616?jms.prefetchPolicy.all=1&jms.redeliveryPolicy.maximumRedeliveries=0
             - name: FRONTEND_URL
               value: https://{{ .Values.appDomain }}
+            - name: LOGGING_LEVEL_COM_BANKA1_COMMON
+              value: WARN
             - name: SPRING_SQL_INIT_MODE
               value: always
 ---
