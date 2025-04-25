@@ -16,13 +16,3 @@ spec:
                 name: {{ .Release.Name}}-frontend
                 port:
                   number: 80
-    - host: {{ .Values.idpDomain}}
-      http:
-        paths:
-          - pathType: ImplementationSpecific
-            path: "/"
-            backend:
-              service:
-                name: {{ .Release.Name}}-frontend
-                port:
-                  number: 80
