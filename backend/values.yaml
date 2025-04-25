@@ -1,4 +1,5 @@
 appDomain: banka-1.si.raf.edu.rs
 idpDomain: idp.banka-1.si.raf.edu.rs
+mailFrom: no-reply@mg.djues3.com
 
 imageTag: latest

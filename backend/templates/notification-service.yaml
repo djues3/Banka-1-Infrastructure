@@ -84,6 +84,8 @@ spec:
                 secretKeyRef:
                   key: password
                   name: {{ .Release.Name}}-mailgun
+            - name: LOGGING_LEVEL_COM_BANKA1_COMMON
+              value: WARN
 
 ---
 apiVersion: v1

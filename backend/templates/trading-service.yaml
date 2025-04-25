@@ -47,6 +47,13 @@ spec:
               value: http://{{ .Release.Name}}-user-service:8081
             - name: BANKING_SERVICE
               value: http://{{ .Release.Name}}-banking-service:8082
+            - name: REDIS_ADDR
+              value: {{ .Release.Name}}-redis-master.{{ .Release.Namespace}}.svc:6379
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: redis-password
+                  name: banka-1-redis
 ---
 apiVersion: v1
 kind: Service

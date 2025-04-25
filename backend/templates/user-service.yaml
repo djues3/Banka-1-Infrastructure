@@ -52,6 +52,8 @@ spec:
                 secretKeyRef:
                   key: password
                   name: {{ .Release.Name}}-pguser-user-service-user
+            - name: LOGGING_LEVEL_COM_BANKA1_COMMON
+              value: WARN
             - name: SPRING_ACTIVEMQ_BROKER_URL
               value: tcp://{{ .Release.Name}}-message-broker:61616?jms.prefetchPolicy.all=1&jms.redeliveryPolicy.maximumRedeliveries=0
             - name: FRONTEND_URL
