@@ -64,6 +64,27 @@ spec:
               value: always
             - name: SPRING_OUTPUT_ANSI_ENABLED
               value: always
+            - name: MAIL_SMTP_HOST
+              value: smtp.eu.mailgun.org
+            - name: MAIL_SMTP_PORT
+              value: "587"
+            - name: MAIL_SMTP_AUTH
+              value: "true"
+            - name: MAIL_SMTP_STARTTLS_ENABLE
+              value: "true"
+            - name: MAIL_FROM
+              value: {{ .Values.mailFrom }}
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: {{ .Release.Name}}-mailgun
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ .Release.Name}}-mailgun
+
 ---
 apiVersion: v1
 kind: Service
