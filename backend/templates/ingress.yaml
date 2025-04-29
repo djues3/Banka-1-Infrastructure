@@ -69,13 +69,14 @@ metadata:
   namespace: {{ .Release.Namespace}}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /api/customer/$1/$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
   rules:
     - host: {{ .Values.appDomain}}
       http:
         paths:
-          - pathType: Prefix
+          - pathType: ImplementationSpecific
             path: "/user/(.+)/(.+)"
             backend:
               service:
