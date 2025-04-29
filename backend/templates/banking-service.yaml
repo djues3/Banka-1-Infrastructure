@@ -16,8 +16,7 @@ spec:
         app: {{ .Release.Name }}-banking-service
     spec:
       containers:
-        - image:
-            harbor.k8s.elab.rs/banka-1/banking-service:{{ .Values.imageTag}}
+        - image: harbor.k8s.elab.rs/banka-1/banking-service:{{ .Values.imageTag}}
           imagePullPolicy: Always
           name: banking-service
 {{/*          livenessProbe:*/}}
@@ -62,19 +61,21 @@ spec:
             - name: SPRING_SQL_INIT_MODE
               value: always
             - name: INTERBANK_TARGET_URL
-              value: https://banka-4.si.raf.edu.rs/interbank/interbank
+              value: https://banka-4.si.raf.edu.rs/api/interbank/interbank
             - name: TRADING_SERVICE_URL
-              value: http://{{ .Release.Name}}-trading-service:3000
-            - name: API_KEY
+              value: http://{{ .Release.Name}}-trading-service:3000/interbank/internal
+            - name: FOREIGN_BANK_API_KEY
               valueFrom:
                 secretKeyRef:
                   key: api_key
                   name: banka-1-interbank
-            - name: FOREIGN_BANK_API_KEY
+            - name: API_KEY
               valueFrom:
                 secretKeyRef:
                   key: bank4_api_key
                   name: banka-1-interbank
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB
+              value: TRACE
 
 ---
 apiVersion: v1

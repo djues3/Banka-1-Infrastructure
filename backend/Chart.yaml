@@ -3,5 +3,5 @@ name: backend
 description: Backend for Bank1
 
 type: application
-version: 0.7.0
+version: 0.7.21
 appVersion: "0.0.1"

@@ -60,6 +60,8 @@ spec:
               value: {{ .Values.appDomain}}
             - name: SPRING_SQL_INIT_MODE
               value: always
+            - name: LOGGING_LEVEL_ROOT
+              value: INFO
 
 ---
 apiVersion: v1

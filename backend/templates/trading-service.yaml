@@ -45,7 +45,7 @@ spec:
               value: "tcp"
             - name: USER_SERVICE
               value: http://{{ .Release.Name}}-user-service:8081
-            - name: BANKING_SERVICE
+            - name: BANKING_SERVICE_URL
               value: http://{{ .Release.Name}}-banking-service:8082
             - name: REDIS_ADDR
               value: {{ .Release.Name}}-redis-master.{{ .Release.Namespace}}.svc:6379
@@ -64,6 +64,8 @@ spec:
                 secretKeyRef:
                   key: api_key
                   name: banka-1-interbank
+            - name: BANK4_BASE_URL
+              value: https://banka-4.si.raf.edu.rs/api/interbank
 ---
 apiVersion: v1
 kind: Service
