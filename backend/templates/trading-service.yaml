@@ -54,6 +54,16 @@ spec:
                 secretKeyRef:
                   key: redis-password
                   name: banka-1-redis
+            - name: BANK1_SECURITY
+              valueFrom:
+                secretKeyRef:
+                  key: bank4_api_key
+                  name: banka-1-interbank
+            - name: BANK4_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: api_key
+                  name: banka-1-interbank
 ---
 apiVersion: v1
 kind: Service

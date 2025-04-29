@@ -16,23 +16,24 @@ spec:
         app: {{ .Release.Name }}-banking-service
     spec:
       containers:
-        - image: harbor.k8s.elab.rs/banka-1/banking-service:{{ .Values.imageTag}}
+        - image:
+            harbor.k8s.elab.rs/banka-1/banking-service: {{ .Values.imageTag}}
           imagePullPolicy: Always
           name: banking-service
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8082
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8082
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            failureThreshold: 10
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /actuator/health*/}}
+{{/*              port: 8082*/}}
+{{/*            initialDelaySeconds: 60*/}}
+{{/*            periodSeconds: 10*/}}
+{{/*            failureThreshold: 3*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /actuator/health*/}}
+{{/*              port: 8082*/}}
+{{/*            initialDelaySeconds: 30*/}}
+{{/*            periodSeconds: 10*/}}
+{{/*            failureThreshold: 10*/}}
           env:
             - name: THC_PORT
               value: "8082"
@@ -60,6 +61,21 @@ spec:
               value: WARN
             - name: SPRING_SQL_INIT_MODE
               value: always
+            - name: INTERBANK_TARGET_URL
+              value: https://banka-4.si.raf.edu.rs/interbank/interbank
+            - name: TRADING_SERVICE_URL
+              value: http://{{ .Release.Name}}-trading-service:3000
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: api_key
+                  name: banka-1-interbank
+            - name: FOREIGN_BANK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: bank4_api_key
+                  name: banka-1-interbank
+
 ---
 apiVersion: v1
 kind: Service
