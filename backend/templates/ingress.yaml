@@ -31,7 +31,7 @@ spec:
               service:
                 name: {{ .Release.Name}}-trading-service
                 port:
-                  number: 3000
+                  number: 8083
           - pathType: ImplementationSpecific
             path: "/api/support(/|$)(.*)"
             backend:
@@ -39,3 +39,46 @@ spec:
                 name: {{ .Release.Name}}-support-service
                 port:
                   number: 8000
+          - pathType: ImplementationSpecific
+            path: "/interbank(/|$)(.*)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-banking-service
+                port:
+                  number: 8082
+          - pathType: ImplementationSpecific
+            path: "/public-stock(/|$)(.*)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-trading-service
+                port:
+                  number: 8083
+          - pathType: ImplementationSpecific
+            path: "/negotiations(/|$)(.*)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-trading-service
+                port:
+                  number: 8083
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name}}-ingress-user-customer
+  namespace: {{ .Release.Namespace}}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /api/customer/$1/$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.appDomain}}
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/user/(.+)/(.+)"
+            backend:
+              service:
+                name: {{ .Release.Name}}-user-service
+                port:
+                  number: 8081
